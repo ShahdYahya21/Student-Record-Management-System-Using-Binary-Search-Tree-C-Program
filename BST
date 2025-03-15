@@ -1,0 +1,134 @@
+struct Node{
+int studentID;
+char studentName[100];
+char address[100];
+int classID;
+char date[100];
+struct Node* left;
+struct Node* right;
+};
+
+typedef struct Node* TNode;
+TNode MakeEmpty(TNode T);
+TNode FindMin(TNode T);
+TNode FindMax(TNode T);
+TNode Insert(TNode T,int studentID,char* studentName,char* address,int classID,char* date);
+TNode Delete(int X, TNode T);
+TNode Find(int studentID, TNode T);
+
+
+TNode MakeEmpty(TNode T){
+  if(T != NULL){
+    MakeEmpty(T -> left);
+    MakeEmpty(T -> right);
+    free(T);
+
+  }
+  return NULL;
+}
+
+TNode Find(int studentID, TNode T){
+  if(T == NULL)
+    return NULL;
+
+  else if(studentID <  T -> studentID)
+    return Find(studentID, T -> left);
+
+  else if(studentID > T -> studentID)
+    return Find(studentID, T -> right);
+
+  else return T;
+}
+
+TNode FindMin(TNode T){
+  if(T == NULL)
+    return NULL;
+
+  else if(T -> left == NULL)
+    return T;
+
+  else return FindMin(T -> left);
+
+}
+
+TNode FindMax(TNode T){
+  if(T == NULL)
+    return NULL;
+
+  else if(T -> right == NULL)
+    return T;
+
+  else return FindMax(T -> right);
+}
+
+TNode Insert(TNode T,int studentID,char* studentName,char* address,int classID,char* date) {
+    if (T == NULL) {
+       T = (struct Node*)malloc(sizeof(struct Node));
+        if (T == NULL)
+            printf("Out of space");
+        else {
+            T->studentID = studentID;
+            strcpy(T -> studentName,studentName);
+            strcpy(T -> address,address);
+            T -> classID = classID;
+            strcpy(T -> date,date);
+            T->left = NULL;
+            T->right = NULL;
+
+        }
+    }
+    else if (studentID < T -> studentID)
+        T->left = Insert(T->left,studentID, studentName, address, classID, date);
+    else if (studentID > T -> studentID)
+        T->right = Insert(T->right,studentID, studentName, address, classID, date);
+
+   return T;
+
+}
+
+TNode Delete(int studentID, TNode T){
+    TNode TempCell;
+  if(T == NULL) printf("element not found");
+
+  else if(studentID < T -> studentID){
+    T -> left = Delete(studentID, T -> left);
+
+  }
+  else if(studentID > T -> studentID){
+    T -> right = Delete(studentID, T -> right);
+  }
+  else{
+    if(T -> left && T -> right){
+    TempCell = FindMin(T -> right);
+    T -> studentID = TempCell -> studentID;
+    T -> right = Delete(T -> studentID, T -> right);
+  }
+
+    else{
+     TempCell = T;
+      if(T -> left == NULL){
+        T = T -> right;
+      }
+      else if(T -> right == NULL){
+        T = T -> left;
+      }
+      free(TempCell);
+    }
+  }
+  return T;
+}
+void UpdateInfo(TNode T,char* address,int classID){
+            strcpy(T -> address,address);
+            T -> classID = classID;
+}
+
+void InorderTraversal(TNode T) {
+      if (T != NULL) {
+        InorderTraversal(T->left);
+        printf("%d %s %s %d %s\n", T->studentID, T->studentName, T ->address, T->classID, T->date);
+        InorderTraversal(T->right);
+    }
+}
+
+
+
